@@ -98,7 +98,7 @@ EOF
   end
 
   def create_spec_direcroty
-    Dir.mkdir("spec/day_#{@day}")
+    Dir.mkdir("spec/lib/day_#{@day}")
   end
 
   def create_input_files
@@ -112,7 +112,7 @@ EOF
   end
 
   def create_spec_file
-    File.write("spec/day_#{@day}/task_spec.rb", SPEC_CODE % { day: @day })
+    File.write("spec/lib/day_#{@day}/task_spec.rb", SPEC_CODE % { day: @day })
   end
 end
 
