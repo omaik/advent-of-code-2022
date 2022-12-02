@@ -4,11 +4,9 @@ module Day12
       @sample = sample
     end
 
-    def call1
-    end
+    def call1; end
 
-    def call2
-    end
+    def call2; end
 
     def input
       @input ||= Input.call(@sample)
