@@ -5,16 +5,16 @@ module Day4
     end
 
     def call1
-      input.select do |line|
+      input.count do |line|
         range(line.first).include?(range(line.last)) ||
           range(line.last).include?(range(line.first))
-      end.count
+      end
     end
 
     def call2
-      input.select do |line|
+      input.count do |line|
         (range(line.first).to_a & range(line.last).to_a).any?
-      end.count
+      end
     end
 
     def input
