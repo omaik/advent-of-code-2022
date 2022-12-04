@@ -14,6 +14,8 @@
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'require_all'
+require 'active_support/all'
+require 'pry'
 require_all 'lib'
 
 RSpec.configure do |config|
