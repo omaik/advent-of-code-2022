@@ -5,7 +5,11 @@ module Day5
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        containers, moves = data(sample).split("\n\n")
+        containers = containers.split("\n").map { |x| x.split(' ')}
+        moves = moves.split("\n").map { |move| move.match(/move (?<amount>\d+) from (?<source>\d+) to (?<destination>\d+)/) }
+
+        [containers, moves]
       end
 
       def data(sample)
