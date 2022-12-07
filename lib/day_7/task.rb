@@ -26,9 +26,9 @@ module Day7
         command.execute(context)
       end
 
-      size = root.size - 40_000_000
+      overflow = root.size - 40_000_000
 
-      context.directories.select { |x| x.size > size }.min_by(&:size).size
+      context.directories.select { |x| x.size > overflow }.min_by(&:size).size
     end
 
     def input
