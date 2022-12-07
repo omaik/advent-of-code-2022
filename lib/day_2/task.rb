@@ -4,13 +4,13 @@ module Day2
       'X' => 'A',
       'Y' => 'B',
       'Z' => 'C'
-    }
+    }.freeze
 
     SCORES = {
       'A' => 1,
       'B' => 2,
       'C' => 3
-    }
+    }.freeze
 
     ORDER = SCORES.keys
 

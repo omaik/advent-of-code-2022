@@ -5,11 +5,11 @@ module Day7
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        data(sample).split('$').compact_blank[1..].each(&:strip!).map { |x| Command.new(x) }
       end
 
       def data(sample)
-        sample ? File.read(SAMPLE_INPUT_FILE_PATH) : File.read(INPUT_FILE_PATH)
+        sample ? ::File.read(SAMPLE_INPUT_FILE_PATH) : ::File.read(INPUT_FILE_PATH)
       end
     end
   end

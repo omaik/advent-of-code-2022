@@ -6,8 +6,10 @@ module Day5
 
       def call(sample)
         containers, moves = data(sample).split("\n\n")
-        containers = containers.split("\n").map { |x| x.split(' ')}
-        moves = moves.split("\n").map { |move| move.match(/move (?<amount>\d+) from (?<source>\d+) to (?<destination>\d+)/) }
+        containers = containers.split("\n").map { |x| x.split(' ') }
+        moves = moves.split("\n").map do |move|
+          move.match(/move (?<amount>\d+) from (?<source>\d+) to (?<destination>\d+)/)
+        end
 
         [containers, moves]
       end

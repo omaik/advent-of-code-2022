@@ -20,7 +20,8 @@ module Day5
       containers, moves = input
 
       moves.each do |move|
-        containers[move['destination'].to_i - 1].unshift(*containers[move['source'].to_i - 1].shift(move['amount'].to_i))
+        containers_to_move = containers[move['source'].to_i - 1].shift(move['amount'].to_i)
+        containers[move['destination'].to_i - 1].unshift(*containers_to_move)
       end
 
       containers.map(&:first).join
