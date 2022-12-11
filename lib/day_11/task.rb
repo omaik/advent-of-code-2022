@@ -4,9 +4,23 @@ module Day11
       @sample = sample
     end
 
-    def call1; end
+    def call1
+      monkeys = input
 
-    def call2; end
+      20.times do
+        monkeys.each { |monkey| monkey.iterate(monkeys, true) }
+      end
+      monkeys.map(&:inspections).sort.last(2).inject(:*)
+    end
+
+    def call2
+      monkeys = input
+
+      10_000.times do |_i|
+        monkeys.each { |monkey| monkey.iterate(monkeys, false) }
+      end
+      monkeys.map(&:inspections).sort.last(2).inject(:*)
+    end
 
     def input
       @input ||= Input.call(@sample)
