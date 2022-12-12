@@ -16,7 +16,7 @@ module Day11
     def call2
       monkeys = input
 
-      10_000.times do |_i|
+      10_000.times do
         monkeys.each { |monkey| monkey.iterate(monkeys, false) }
       end
       monkeys.map(&:inspections).sort.last(2).inject(:*)
