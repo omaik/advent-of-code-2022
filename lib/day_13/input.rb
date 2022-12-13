@@ -5,7 +5,9 @@ module Day13
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        data(sample).split("\n\n").map do |x|
+          x.split("\n").map { |y| eval(y) } # rubocop:disable Security/Eval
+        end
       end
 
       def data(sample)
