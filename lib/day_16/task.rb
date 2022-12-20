@@ -23,7 +23,9 @@ module Day16
       @finishes.max_by { |x| x[3] }[3]
     end
 
-    def call2; end
+    def call2
+      Day2.new(input).call
+    end
 
     def input
       @input ||= Input.call(@sample)
