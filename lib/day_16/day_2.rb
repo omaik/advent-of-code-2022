@@ -13,14 +13,15 @@ module Day16
 
   class Player
     attr_reader :game, :current_valve
-    def initialize(game, current_valve=nil)
+
+    def initialize(game, current_valve = nil)
       @game = game
       @current_valve = current_valve || game.valves.find { |x| x.name == 'AA' }
     end
 
     def move
       moves = []
-      if game.opens.map {|x| x[1] }.exclude?(current_valve) && current_valve.rate.positive?
+      if game.opens.map { |x| x[1] }.exclude?(current_valve) && current_valve.rate.positive?
         moves << 'open'
 
       else
@@ -43,19 +44,18 @@ module Day16
 
       starting_game.play
 
-      while @games.size > 0
+      while @games.size.positive?
         game = @games.shift
         p [game.step, game.points]
 
         game.play
       end
-      binding.pry
     end
 
-    def self.duplicate(game, move1, move2)
+    def self.duplicate(game, move1, move2) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       new_game = Game.new(game.valves, game.opens.dup, game.step + 1)
       if move1 == 'open'
-        return if new_game.opens.map {|x| x[1] }.include?(game.players.first.current_valve)
+        return if new_game.opens.map { |x| x[1] }.include?(game.players.first.current_valve)
 
         new_game.opens << [new_game.step, game.players.first.current_valve]
         player1 = Player.new(new_game, game.players.first.current_valve)
@@ -64,7 +64,7 @@ module Day16
       end
 
       if move2 == 'open'
-        return if new_game.opens.map {|x| x[1] }.include?(game.players.last.current_valve)
+        return if new_game.opens.map { |x| x[1] }.include?(game.players.last.current_valve)
 
         new_game.opens << [new_game.step, game.players.last.current_valve]
         player2 = Player.new(new_game, game.players.last.current_valve)
@@ -77,8 +77,8 @@ module Day16
       new_game.players = [player1, player2]
 
       if @best_moves[new_game.hash] >= new_game.points
-        p ["excluding", new_game.hash, new_game.step, new_game.points]
-        return
+        p ['excluding', new_game.hash, new_game.step, new_game.points]
+        nil
       else
 
         @best_moves[new_game.hash] = new_game.points
@@ -105,13 +105,12 @@ module Day16
       end
     end
 
-
     def points
       @opens.map { |x| x[1].rate * (25 - x[0]) }.sum
     end
 
     def hash
-      [step, 5].max.to_s + "|" + players.map(&:current_valve).map(&:name).join
+      "#{[step, 5].max}|#{players.map(&:current_valve).map(&:name).join}"
     end
   end
 end

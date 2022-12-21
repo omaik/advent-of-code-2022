@@ -5,7 +5,7 @@ module Day17
       SAMPLE_INPUT_FILE_PATH = "#{__dir__}/input.sample.txt".freeze
 
       def call(sample)
-        data(sample).split("\n")
+        data(sample).strip.split('')
       end
 
       def data(sample)
