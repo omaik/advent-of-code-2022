@@ -6,7 +6,7 @@ describe Day20::Task do
       let(:sample) { true }
 
       it 'works' do
-        expect(task.call1).to eq(nil)
+        expect(task.call1).to eq(3)
       end
     end
 
@@ -14,7 +14,7 @@ describe Day20::Task do
       let(:sample) { false }
 
       it 'works' do
-        expect(task.call1).to eq(nil)
+        expect(task.call1).to eq(3346)
       end
     end
   end
@@ -24,15 +24,16 @@ describe Day20::Task do
       let(:sample) { true }
 
       it 'works' do
-        expect(task.call2).to eq(nil)
+        expect(task.call2).to eq(1_623_178_306)
       end
     end
 
     context 'when real input' do
       let(:sample) { false }
 
-      it 'works' do
-        expect(task.call2).to eq(nil)
+      # too slow :(
+      xit 'works' do
+        expect(task.call2).to eq(4_265_712_588_168)
       end
     end
   end
