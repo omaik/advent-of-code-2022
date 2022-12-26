@@ -9,7 +9,7 @@ module Day21
       klass = Class.new do
         inp.each do |line|
           define_method line[0] do
-            eval(line[1])
+            eval(line[1]) # rubocop:disable Security/Eval
           end
         end
       end

@@ -4,9 +4,23 @@ module Day19
       @sample = sample
     end
 
-    def call1; end
+    def call1
+      input.each.with_index(1).map do |line, index|
+        Blueprint.reset
+        line.simulate
+        res = Blueprint.iterate(24)
 
-    def call2; end
+        res * index
+      end.sum
+    end
+
+    def call2
+      input.first(3).map do |line|
+        Blueprint.reset
+        line.simulate
+        Blueprint.iterate(32)
+      end.inject(:*)
+    end
 
     def input
       @input ||= Input.call(@sample)
