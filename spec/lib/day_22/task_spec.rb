@@ -6,7 +6,7 @@ describe Day22::Task do
       let(:sample) { true }
 
       it 'works' do
-        expect(task.call1).to eq(nil)
+        expect(task.call1).to eq(6032)
       end
     end
 
@@ -14,7 +14,7 @@ describe Day22::Task do
       let(:sample) { false }
 
       it 'works' do
-        expect(task.call1).to eq(nil)
+        expect(task.call1).to eq(1484)
       end
     end
   end
@@ -24,7 +24,7 @@ describe Day22::Task do
       let(:sample) { true }
 
       it 'works' do
-        expect(task.call2).to eq(nil)
+        expect(task.call2).to eq(5031)
       end
     end
 
@@ -32,7 +32,7 @@ describe Day22::Task do
       let(:sample) { false }
 
       it 'works' do
-        expect(task.call2).to eq(nil)
+        expect(task.call2).to eq(142_228)
       end
     end
   end
