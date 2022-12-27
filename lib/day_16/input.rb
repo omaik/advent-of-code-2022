@@ -48,6 +48,7 @@ module Day16
       @open
     end
 
+
     def open!
       @open = true
     end

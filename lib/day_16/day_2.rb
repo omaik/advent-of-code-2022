@@ -7,110 +7,173 @@ module Day16
     end
 
     def call
-      Game.play(@valves)
+      sim = Simulation.new(@valves)
+
+      Game.add_simulation(sim)
+      Game.play
     end
   end
 
-  class Player
-    attr_reader :game, :current_valve
+  class Simulation
+    attr_accessor :valves, :minute, :person_valve, :elephant_valve, :open_valves
 
-    def initialize(game, current_valve = nil)
-      @game = game
-      @current_valve = current_valve || game.valves.find { |x| x.name == 'AA' }
+    def initialize(valves)
+      @valves = valves
+      @person_valve = valves.find { |x| x.name == 'AA' }
+      @elephant_valve = @person_valve
+      @open_valves = Hash.new { |h, k| h[k] = [] }
+      @minute = 0
     end
 
-    def move
-      moves = []
-      if game.opens.map { |x| x[1] }.exclude?(current_valve) && current_valve.rate.positive?
-        moves << 'open'
+    def make_a_copy
+      copy = clone
 
-      else
-        @current_valve.neighbors.each do |neighbor|
-          moves << neighbor
-        end
+      copy.open_valves = open_valves.deep_dup
+
+      copy
+    end
+
+    # Answers -
+    #
+    def play_minute
+      cache_key = [@minute, [person_valve.name, elephant_valve.name].sort].join('-')
+      # cache_key = @minute
+      if (@minute >= 7 && Cache.get(cache_key) - score >= 0) ||
+        (@minute < 7 && Cache.get(cache_key) - score >= 400)
+
+        # puts ["rejected", @minute, score].join(' ')
+        return
+      end
+
+      if (@valves.map(&:rate).sum - @open_valves.values.flatten.map(&:rate).sum).zero?
+        # binding.pry if score > 1706
+        Game.finish(self)
+        return
+      end
+
+      if @minute == 26
+        Game.finish(self)
+        return
+      end
+
+      Cache.add(cache_key, score) if @minute >= 5
+
+
+
+      open_person_valve
+      visit_person_neighbours
+    end
+
+    def score
+      @open_valves.map { |minute, valves| (26 - minute) * valves.map(&:rate).sum }.sum
+    end
+
+    def open_person_valve
+      return if @open_valves.values.flatten.map(&:name).include?(@person_valve.name)
+      return if @person_valve.rate.zero?
+
+      person_action = {
+        type: :open,
+        valve: @person_valve
+      }
+
+      play_elephant_actions(person_action)
+    end
+
+    def visit_person_neighbours
+      @person_valve.neighbors.each do |neighbour|
+        play_elephant_actions({
+                                type: :visit,
+                                valve: neighbour
+                              })
+      end
+    end
+
+    def play_elephant_actions(person_action)
+      open_elephant_valve(person_action)
+
+      visit_elephant_neighbours(person_action)
+    end
+
+    def open_elephant_valve(person_action)
+      return if @open_valves.values.flatten.map(&:name).include?(@elephant_valve.name)
+      return if @elephant_valve.rate.zero?
+      return if person_action[:type] == :open && @elephant_valve == person_action[:valve]
+
+      elephant_action = {
+        type: :open,
+        valve: @elephant_valve
+      }
+
+      add_simulation(person_action, elephant_action)
+    end
+
+    def visit_elephant_neighbours(person_action)
+      @elephant_valve.neighbors.each do |neighbour|
+        add_simulation(person_action, {type: :visit, valve: neighbour})
+      end
+    end
+
+    def add_simulation(person_action, elephant_action)
+      copy = make_a_copy
+
+      copy.minute += 1
+
+      copy.open_valves[copy.minute] << person_action[:valve] if person_action[:type] == :open
+      copy.open_valves[copy.minute] << elephant_action[:valve] if elephant_action[:type] == :open
+
+      copy.person_valve = person_action[:valve]
+
+      copy.elephant_valve = elephant_action[:valve]
+
+      Game.add_simulation(copy)
+    end
+  end
+
+  class Cache
+    class << self
+      def add(minute, score)
+        @cache ||= Hash.new(-100)
+
+        @cache[minute] = score if @cache[minute] < score
+      end
+
+      def get(minute)
+        @cache ||= Hash.new(-100)
+        @cache[minute]
       end
     end
   end
+
+
+
 
   class Game
-    attr_accessor :step, :valves, :opens, :players
-
-    def self.play(valves)
-      @games = []
-      @best_moves = Hash.new(-100)
-      @finishes = []
-
-      starting_game = Game.new(valves, [])
-
-      starting_game.play
-
-      while @games.size.positive?
-        game = @games.shift
-        p [game.step, game.points]
-
-        game.play
-      end
-    end
-
-    def self.duplicate(game, move1, move2) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      new_game = Game.new(game.valves, game.opens.dup, game.step + 1)
-      if move1 == 'open'
-        return if new_game.opens.map { |x| x[1] }.include?(game.players.first.current_valve)
-
-        new_game.opens << [new_game.step, game.players.first.current_valve]
-        player1 = Player.new(new_game, game.players.first.current_valve)
-      else
-        player1 = Player.new(new_game, move1)
+    class << self
+      def add_simulation(simulation)
+        @simulations ||= []
+        @simulations << simulation
       end
 
-      if move2 == 'open'
-        return if new_game.opens.map { |x| x[1] }.include?(game.players.last.current_valve)
+      def finish(simulation)
+        @finished ||= []
 
-        new_game.opens << [new_game.step, game.players.last.current_valve]
-        player2 = Player.new(new_game, game.players.last.current_valve)
-      else
-        player2 = Player.new(new_game, move2)
+        @finished << simulation
       end
 
-      @finishes << new_game && return if new_game.step == 12
+      def play
+        loop do
+          binding.pry if @simulations.blank?
 
-      new_game.players = [player1, player2]
 
-      if @best_moves[new_game.hash] >= new_game.points
-        p ['excluding', new_game.hash, new_game.step, new_game.points]
-        nil
-      else
+          x = @simulations.shift
 
-        @best_moves[new_game.hash] = new_game.points
+          p [x.minute, @simulations.count] if rand(10000) == 2
 
-        @games << new_game
-      end
-    end
+          x.play_minute
 
-    def initialize(valves, opens, step = 0)
-      @opens = opens
-      @step = step
-      @valves = valves
-      @players = [Player.new(self), Player.new(self)]
-    end
-
-    def play
-      moves1 = players.first.move
-      moves2 = players.last.move
-
-      moves1.each do |move1|
-        moves2.each do |move2|
-          self.class.duplicate(self, move1, move2)
         end
       end
-    end
-
-    def points
-      @opens.map { |x| x[1].rate * (25 - x[0]) }.sum
-    end
-
-    def hash
-      "#{[step, 5].max}|#{players.map(&:current_valve).map(&:name).join}"
     end
   end
 end
