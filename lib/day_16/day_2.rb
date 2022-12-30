@@ -39,7 +39,7 @@ module Day16
       cache_key = [@minute, [person_valve.name, elephant_valve.name].sort].join('-')
       # cache_key = @minute
       if (@minute >= 7 && Cache.get(cache_key) - score >= 0) ||
-        (@minute < 7 && Cache.get(cache_key) - score >= 400)
+         (@minute < 7 && Cache.get(cache_key) - score >= 400)
 
         # puts ["rejected", @minute, score].join(' ')
         return
@@ -57,8 +57,6 @@ module Day16
       end
 
       Cache.add(cache_key, score) if @minute >= 5
-
-
 
       open_person_valve
       visit_person_neighbours
@@ -110,7 +108,7 @@ module Day16
 
     def visit_elephant_neighbours(person_action)
       @elephant_valve.neighbors.each do |neighbour|
-        add_simulation(person_action, {type: :visit, valve: neighbour})
+        add_simulation(person_action, { type: :visit, valve: neighbour })
       end
     end
 
@@ -145,9 +143,6 @@ module Day16
     end
   end
 
-
-
-
   class Game
     class << self
       def add_simulation(simulation)
@@ -165,13 +160,11 @@ module Day16
         loop do
           binding.pry if @simulations.blank?
 
-
           x = @simulations.shift
 
-          p [x.minute, @simulations.count] if rand(10000) == 2
+          p [x.minute, @simulations.count] if rand(10_000) == 2
 
           x.play_minute
-
         end
       end
     end
